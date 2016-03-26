@@ -1,5 +1,4 @@
 // mythread.cpp
-#include <iostream>
 #include <string>
 #include "mythread.h"
 #include "myserver.h"
@@ -45,7 +44,6 @@ void MyThread::run()
      {
         if ((ClientsIDs[i]==1) && (timeOut1.elapsed()-ClientTimeOut[i]>6000))
             {
-             qDebug() << "Cleaning timeouted Client" <<i;
              ClientsIDs[i]=0;NumberOfClients--;
              if (i<j) j=i;
             }
@@ -59,8 +57,6 @@ void MyThread::run()
      socket->write("***");
      socket->write(QByteArray::number(i));
      NumberOfClients++;
-     qDebug() << "Client" << i << " (" << socket->peerAddress().toString() << "-" << socketDescriptor << ") connected";
-     qDebug() << NumberOfClients << " client(s) connected";
      connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()), Qt::DirectConnection);
      connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
@@ -74,7 +70,6 @@ void MyThread::run()
     }
     else
         {
-           qDebug() << "Server is full: 10/10 clients connected";exit(0);
         }
 }
 
@@ -92,7 +87,6 @@ void MyThread::readyRead()
         j=i;
         ClientsData[i]=Data;
     }
-    else {qDebug() << "Incoming data error : NO MATCHING CLIENT ID";}
 
     for(i=0;i<10;i++)
     {
@@ -102,8 +96,6 @@ void MyThread::readyRead()
         if (timeOut1.elapsed()-ClientTimeOut[i]>3000)
         {
             ClientsIDs[i]=0;NumberOfClients--;
-            qDebug() << "Client"<<i<< " timeout reached, fully disconnected";
-            qDebug() << NumberOfClients << " client(s) connected";
         }
         else
          {
@@ -114,8 +106,6 @@ void MyThread::readyRead()
             {
             ClientsIDs[i]=0;
             NumberOfClients--;
-            qDebug() << "Client"<<i<< " disconnection mask reached zero, fully disconnected";
-            qDebug() << NumberOfClients << " client(s) connected";
             }
         }
         }
@@ -128,7 +118,6 @@ void MyThread::disconnected()
     int i,j;
     i=0;
     while ((i<10) && (ClientsIDs[i]!=socketDescriptor)) i++;
-    qDebug() << "Client" << i << " (" << socket->peerAddress().toString() << "-" << socketDescriptor << ") disconnected, not free yet";
     ClientsIDs[i]=1; //disconnected not free yet
     ClientsMask[i]=0;
     for (j=0;j<10;j++)
