@@ -5,7 +5,6 @@
 
 #include <QThread>
 #include <QTcpSocket>
-#include <QDebug>
 #include <QTime>
 
 
